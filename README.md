@@ -1,6 +1,6 @@
 # Docker & OpenLayer
 
-## Installazzione Doccker
+## Installazzione Docker
 Installare un editor di testo come Visual Studio Code(disponibile per Linux, Mac e Windows)
 Installare Docker Desktop(Mac e Windows) mentre per gli utenti Linux bisogna installare Docker Engine)
  .[Docker Desktop](https://www.docker.com/products/docker-desktop)
