@@ -2,7 +2,7 @@
 var lat = 41.137508;
 var lon = 16.844006;
 var map;
-var zoom_level = 17;
+var zoom_level = 16;
 var init_layer;
 
 var view;
