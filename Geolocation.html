@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geolocation</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v5.3.0/css/ol.css" type="text/css">
+
+    
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+  - <div id="info" style="display: none;"></div>
+    <label for="track">  
+      track position
+      <input id="track" type="checkbox"/>
+    </label>
+ 
+  
+    <p>
+	positionshowingtouser: <code id="positionshowingtouser1"></code>&nbsp;&nbsp;
+      position accuracy : <code id="accuracy"></code>&nbsp;&nbsp;
+      altitude : <code id="altitude"></code>&nbsp;&nbsp;
+      altitude accuracy : <code id="altitudeAccuracy"></code>&nbsp;&nbsp;
+      heading : <code id="heading"></code>&nbsp;&nbsp;
+      speed : <code id="speed"></code>
+    </p>
+	<button onclick="showPosition1()">Try It</button>
+    
+  
+    <script>
+ 
+ 
+
+      var view = new ol.View({
+        center: ol.proj.fromLonLat([51.3, 35.6]),
+          zoom: 10
+      });
+
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.XYZ({
+              url:'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=f038eed9b9944285888511304cc28d0a'
+            })
+          })
+        ],
+        target: 'map',
+        view: view
+      });
+
+      var geolocation = new ol.Geolocation({
+     
+        trackingOptions: {
+          enableHighAccuracy: true
+        },
+        projection: view.getProjection()
+      });
+      
+
+      function el(id) {
+        return document.getElementById(id);
+      }
+
+      el('track').addEventListener('change', function() {
+        geolocation.setTracking(this.checked);
+      });
+
+    
+      geolocation.on('change', function() {
+	    //el('positionshowingtouser1').innerText = geolocation.getPosition();
+        
+        var view = new ol.View({
+          center: geolocation.getPosition(),
+            zoom: 16
+        });
+
+        map.setView(view)
+  
+
+        el('accuracy').innerText = geolocation.getAccuracy() + ' [m]';
+        el('altitude').innerText = geolocation.getAltitude() + ' [m]';
+        el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
+        el('heading').innerText = geolocation.getHeading() + ' [rad]';
+        el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
+      });
+
+  
+      geolocation.on('error', function(error) {
+        var info = document.getElementById('info');
+        info.innerHTML = error.message;
+        info.style.display = '';
+      });
+
+      var accuracyFeature = new ol.Feature();
+      geolocation.on('change:accuracyGeometry', function() {
+        accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+      });
+
+      var positionFeature = new ol.Feature();
+      positionFeature.setStyle(new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 6,
+          fill: new ol.style.Fill({
+            color: '#3399CC'
+          }),
+          stroke: new ol.style.Stroke({
+            color: '#fff',
+            width: 2
+          })
+        })
+      }));
+
+      geolocation.on('change:position', function() {
+        var coordinates = geolocation.getPosition();
+        var view = new ol.View({
+          center: geolocation.getPosition(),
+            zoom: 16
+        });
+
+        map.setView(view)
+        positionFeature.setGeometry(coordinates ?
+          new ol.geom.Point(coordinates) : null);
+      });
+
+      new ol.layer.Vector({
+        map: map,
+        source: new ol.source.Vector({
+          features: [accuracyFeature, positionFeature]
+        })
+      });
+
+      
+	 
+    </script>
+  </body>
+</html>
