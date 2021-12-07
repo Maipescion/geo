@@ -17,3 +17,5 @@ Installare[GeoServer](https://hub.docker.com/r/kartoza/geoserver)
 
 ### Conclusione
 Adesso siete pronti per sbizzarrirvi 
+
+ciao
