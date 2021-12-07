@@ -4,28 +4,36 @@ var lon = 16.844006;
 var map;
 var zoom_level = 16;
 var init_layer;
-
 var view;
 var geolocation;
+var layer_type;
+var layer_url;
 
 $(document).ready(function() {
+    layer_url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    layer_type = "default";
     init_map();
     $("#current_position").click(function(){
         set_current_position();
     });
     
     $("#cycle").click(function(){
-        switch_to_cycle_map();
+        switch_to_layer("cycle");
     });
 
     $("#transport").click(function(){
-        switch_to_transport_map();
+        switch_to_layer("transport");
     });
+
+    $("#default").click(function(){
+        switch_to_layer("default");
+    });
+
 });
 
 function init_map() {
 	map = L.map('map').setView([lat, lon], 18);
-	init_layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',).addTo(map);
+	init_layer = L.tileLayer(layer_url,).addTo(map);
     map.setZoom(zoom_level);
 }
 
@@ -54,15 +62,15 @@ function add_marker_point(lon, lat) {
     L.circle([lat,lon], 100).addTo(map);
 }
 
-function  switch_to_cycle_map() {
-    console.log("switch_to_cycle_map");    
-    L.tileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=11f6fcd661ff4b408d8aa7befa615144',).addTo(map);
+function  switch_to_layer(layer_name) {
+    if(layer_name == "cycle")
+        layer_url = "https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=11f6fcd661ff4b408d8aa7befa615144";
+    else if(layer_name == "transport")
+        layer_url = "https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=11f6fcd661ff4b408d8aa7befa615144";
+    else if(layer_name == "default")
+        layer_url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    map.eachLayer(function (layer) {
+        map.removeLayer(layer);
+    });
+    L.tileLayer(layer_url,).addTo(map);
 }
-
-function  switch_to_transport_map() {
-    console.log("switch_to_cycle_map");    
-    L.tileLayer('https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=11f6fcd661ff4b408d8aa7befa615144',).addTo(map);
-}
-
-
-
